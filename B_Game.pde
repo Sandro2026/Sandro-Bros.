@@ -4,6 +4,11 @@ void game() {
   actWorld();
   player.act();
   pauseButton();
+  
+  if (mode != lastMode) {
+    handleMusic();
+    lastMode = mode;
+  }
 }
 
 void gameClicks() {
@@ -17,4 +22,13 @@ void pauseButton() {
   stroke(black);
   rect(17, 18, 3, 10, 5);
   rect(23, 18, 3, 10, 5);
+}
+
+void handleMusic() {
+  if (music == null) return;
+  
+  music.stop();
+  if(mode == GAME) {
+    music.loop();
+  }
 }

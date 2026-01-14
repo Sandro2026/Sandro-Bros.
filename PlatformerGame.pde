@@ -1,5 +1,11 @@
+import processing.sound.*;
+
 import fisica.*;
+
 FWorld world;
+
+SoundFile music;
+int lastMode = -1;
 
 final int INTRO = 0;
 final int GAME = 1;
@@ -46,6 +52,9 @@ ArrayList<FGameObject> enemies;
 void setup() {
   size(600, 600);
   Fisica.init(this);
+  
+  music = new SoundFile(this, "music.mp3");
+
   terrain = new ArrayList<FGameObject>();
   enemies = new ArrayList<FGameObject>();
   loadImages();
@@ -88,7 +97,7 @@ void loadImages() {
   goomba[0].resize(gridSize, gridSize);
   goomba[1] = loadImage("goomba1.png");
   goomba[1].resize(gridSize, gridSize);
-  
+
   lava = new PImage[6];
   lava[0] = loadImage("lava0.png");
   lava[0].resize(gridSize, gridSize);
@@ -102,11 +111,10 @@ void loadImages() {
   lava[4].resize(gridSize, gridSize);
   lava[5] = loadImage("lava5.png");
   lava[5].resize(gridSize, gridSize);
-  
+
   thwomp = new PImage[2];
   thwomp[0] = loadImage("thwomp0.png");
   thwomp[1] = loadImage("thwomp1.png");
-
 }
 
 void loadWorld(PImage img) {
@@ -176,15 +184,15 @@ void loadWorld(PImage img) {
         FGoomba gmb = new FGoomba(x*gridSize, y*gridSize);
         enemies.add(gmb);
         world.add(gmb);
-     } else if (c == orange) {
-       FLava lva = new FLava(x*gridSize, y*gridSize);
-       terrain.add(lva);
-       world.add(lva);
-     } else if ( c == aqua) {
-       FThwomp thmp = new FThwomp(x*gridSize, y*gridSize);
-       enemies.add(thmp);
-       world.add(thmp);
-     }
+      } else if (c == orange) {
+        FLava lva = new FLava(x*gridSize, y*gridSize);
+        terrain.add(lva);
+        world.add(lva);
+      } else if ( c == aqua) {
+        FThwomp thmp = new FThwomp(x*gridSize, y*gridSize);
+        enemies.add(thmp);
+        world.add(thmp);
+      }
     }
   }
 }
@@ -195,7 +203,7 @@ void loadPlayer() {
 }
 
 void draw() {
- if (mode == INTRO) {
+  if (mode == INTRO) {
     intro();
   } else if (mode == GAME) {
     game();
