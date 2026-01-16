@@ -1,5 +1,11 @@
+import processing.sound.*;
+
 import fisica.*;
+
 FWorld world;
+
+SoundFile music;
+int lastMode = -1;
 
 final int INTRO = 0;
 final int GAME = 1;
@@ -8,7 +14,6 @@ final int GAMEWIN = 3;
 final int GAMEOVER = 4;
 
 int mode;
-
 
 color white  = #FFFFFF;
 color black  = #000000;
@@ -24,7 +29,9 @@ color pink   = color(255, 174, 201);
 color yellow = color(255, 236, 59);
 color magenta  = color(204, 0, 184);
 color aqua = color(47, 255, 234);
-color midnight = color(39, 52, 95);
+color midnight = color(0, 2, 61);
+color lavender = color(255, 155, 222);
+
 
 PImage wall, map, ice, stone, treeTrunk, spring, spike, treeIntersect, treeMiddle, treeEndEast, treeEndWest, bridge, nightsky;
 
@@ -33,6 +40,8 @@ PImage[] jump;
 PImage[] run;
 PImage[] action;
 PImage[] goomba;
+PImage[] koopa;
+//PImage[] shell;
 PImage[] lava;
 PImage[] thwomp;
 PImage[] hammerbro;
@@ -49,6 +58,9 @@ ArrayList<FGameObject> enemies;
 void setup() {
   size(600, 600);
   Fisica.init(this);
+
+  music = new SoundFile(this, "music.mp3");
+
   terrain = new ArrayList<FGameObject>();
   enemies = new ArrayList<FGameObject>();
   loadImages();
@@ -91,7 +103,7 @@ void loadImages() {
   goomba[0].resize(gridSize, gridSize);
   goomba[1] = loadImage("goomba1.png");
   goomba[1].resize(gridSize, gridSize);
-  
+
   lava = new PImage[6];
   lava[0] = loadImage("lava0.png");
   lava[0].resize(gridSize, gridSize);
@@ -105,7 +117,7 @@ void loadImages() {
   lava[4].resize(gridSize, gridSize);
   lava[5] = loadImage("lava5.png");
   lava[5].resize(gridSize, gridSize);
-  
+
   thwomp = new PImage[2];
   thwomp[0] = loadImage("thwomp0.png");
   thwomp[1] = loadImage("thwomp1.png");
@@ -113,10 +125,18 @@ void loadImages() {
   hammerbro = new PImage[2];
   hammerbro[0] = loadImage("hammerbro0.png");
   hammerbro[1] = loadImage("hammerbro1.png");
-  
+
   hammer = new PImage[1];
   hammer[0] = loadImage("hammer.png");
+
+  koopa = new PImage[2];
+  koopa[0] = loadImage("koopa0.png");
+  koopa[0].resize(gridSize, gridSize);
+  koopa[1] = loadImage("koopa1.png");
+  koopa[1].resize(gridSize, gridSize);
   
+  //shell = new PImage[1];
+  //shell[0] = loadImage("shell");
 }
 
 void loadWorld(PImage img) {
@@ -186,19 +206,23 @@ void loadWorld(PImage img) {
         FGoomba gmb = new FGoomba(x*gridSize, y*gridSize);
         enemies.add(gmb);
         world.add(gmb);
-     } else if (c == orange) {
-       FLava lva = new FLava(x*gridSize, y*gridSize);
-       terrain.add(lva);
-       world.add(lva);
-     } else if ( c == aqua) {
-       FThwomp thmp = new FThwomp(x*gridSize, y*gridSize);
-       enemies.add(thmp);
-       world.add(thmp);
-     } else if ( c == midnight) {
-      FHammerbro hmm = new FHammerbro(x*gridSize, y*gridSize);
-      enemies.add(hmm);
-      world.add(hmm);
-     }
+      } else if (c == orange) {
+        FLava lva = new FLava(x*gridSize, y*gridSize);
+        terrain.add(lva);
+        world.add(lva);
+      } else if ( c == aqua) {
+        FThwomp thmp = new FThwomp(x*gridSize, y*gridSize);
+        enemies.add(thmp);
+        world.add(thmp);
+      } else if ( c == midnight) {
+        FHammerbro hmm = new FHammerbro(x*gridSize, y*gridSize);
+        enemies.add(hmm);
+        world.add(hmm);
+      } else if ( c == lavender) {
+        FKoopa kpa = new FKoopa(x*gridSize, y*gridSize);
+        enemies.add(kpa);
+        world.add(kpa);
+      }
     }
   }
 }
@@ -209,7 +233,7 @@ void loadPlayer() {
 }
 
 void draw() {
- if (mode == INTRO) {
+  if (mode == INTRO) {
     intro();
   } else if (mode == GAME) {
     game();
