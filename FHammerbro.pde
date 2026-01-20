@@ -4,6 +4,9 @@ class FHammerbro extends FGameObject {
   int speed = 50;
   int frame = 0;
 
+  int throwCooldown  = 120;
+  int lastThrow = 0;
+
   FHammerbro(float x, float y) {
     super();
     setPosition(x, y);
@@ -15,6 +18,7 @@ class FHammerbro extends FGameObject {
     animate();
     collide();
     move();
+    throwHammer();
   }
 
   void animate() {
@@ -47,4 +51,17 @@ class FHammerbro extends FGameObject {
     float vy = getVelocityY();
     setVelocity(speed*direction, vy);
   }
+
+
+ void throwHammer() {
+  if (frameCount - lastThrow >= throwCooldown) {
+    lastThrow = frameCount;
+
+    float hammerX = getX();
+    float hammerY = getY() + gridSize/2;
+
+    FHammer h = new FHammer(hammerX, hammerY, direction);
+    world.add(h);
+  }
+ }
 }

@@ -1,0 +1,6 @@
+class FLuckyB extends FGameObject {
+  
+
+  
+  
+}

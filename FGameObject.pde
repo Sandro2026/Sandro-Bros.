@@ -6,6 +6,9 @@ class FGameObject extends FBox {
   FGameObject() {
     super(gridSize, gridSize);
   }
+  FGameObject(int w, int h) {
+    super(w, h);
+  }
   
   void act() {
     
@@ -16,6 +19,20 @@ class FGameObject extends FBox {
     for (int i = 0; i < contacts.size(); i++) {
       FContact fc = contacts.get(i);
       if (fc.contains(n)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  boolean itTouching(FBox s, String n) {
+    ArrayList<FContact> cList = s.getContacts();
+    for (FContact c : cList) {
+      if (n.equals("floor")) {
+        if (c.contains("stone") || c.contains("ice") ||  c.contains("walls") || c.contains("bridge") || c.contains("treetop") || c.contains("spring")) {
+          return true;
+        }
+      } else if (c.contains(n)) {
         return true;
       }
     }

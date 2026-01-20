@@ -9,6 +9,11 @@ void game() {
     handleMusic();
     lastMode = mode;
   }
+  
+  if (player.lives <= 0) {
+    mode = GAMEOVER;
+    return;
+  }
 }
 
 void gameClicks() {

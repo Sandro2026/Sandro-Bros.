@@ -33,7 +33,7 @@ color midnight = color(0, 2, 61);
 color lavender = color(255, 155, 222);
 
 
-PImage wall, map, ice, stone, treeTrunk, spring, spike, treeIntersect, treeMiddle, treeEndEast, treeEndWest, bridge, nightsky;
+PImage wall, map, ice, stone, treeTrunk, spring, spike, treeIntersect, treeMiddle, treeEndEast, treeEndWest, bridge, nightsky, shell, luckyB;
 
 PImage[] idle;
 PImage[] jump;
@@ -68,6 +68,7 @@ void setup() {
   loadPlayer();
 }
 void loadImages() {
+  luckyB = loadImage("luckyB.png");
   map = loadImage("map.png");
   ice = loadImage("blueBlock.png");
   treeTrunk = loadImage("tree_trunk.png");
@@ -135,8 +136,9 @@ void loadImages() {
   koopa[1] = loadImage("koopa1.png");
   koopa[1].resize(gridSize, gridSize);
   
-  //shell = new PImage[1];
-  //shell[0] = loadImage("shell");
+  
+  shell = loadImage("shell.jpg");
+  shell.resize(gridSize, gridSize);
 }
 
 void loadWorld(PImage img) {

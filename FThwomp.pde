@@ -1,11 +1,15 @@
 class FThwomp extends FGameObject {
 
   boolean activated = false;
-  float triggerRange = gridSize / 2;
+  boolean waiting = false;
+
+  float sensor = gridSize / 2;
   float startX, startY;
 
+  int waitStart;
+
   FThwomp(float x, float y) {
-    super();
+    super(gridSize, thwomp[0].height);
     startX = x;
     startY = y;
 
@@ -17,8 +21,8 @@ class FThwomp extends FGameObject {
 
   void act() {
     animate();
-    checkTrigger();
-    checkReset();
+    trigger();
+    reset();
     collide();
   }
 
@@ -27,24 +31,23 @@ class FThwomp extends FGameObject {
     else attachImage(thwomp[0]);
   }
 
-  void checkTrigger() {
+  void trigger() {
     if (activated) return;
 
     float px = player.getX();
     float py = player.getY();
 
     boolean under =
-      abs(px - getX()) < triggerRange &&
+      abs(px - getX()) < sensor &&
       py > getY();
 
     if (under) {
       activated = true;
-      setStatic(false); // fall
+      setStatic(false);
     }
   }
 
-  void checkReset() {
-    // player back at spawn?
+  void reset() {
     if (player.getX() == 0 && player.getY() == 0 && activated) {
       activated = false;
       setStatic(true);

@@ -4,7 +4,11 @@ class FPlayer extends FGameObject {
   int direction;
   int lives;
   boolean touchground;
-  
+  //int jumpC = 0;
+  int maxJ = 2;
+
+  FBox footSensor;
+  FBox headSensor;
 
   FPlayer() {
     super();
@@ -15,16 +19,39 @@ class FPlayer extends FGameObject {
     setName("player");
     setRotatable(false);
     setFillColor(red);
+
+    footSensor = new FBox(gridSize - 10, 10);
+    footSensor.setStaticBody(false);
+    footSensor.setSensor(true);
+    footSensor.setName("footSensor");
+    footSensor.setNoStroke();
+    footSensor.setFill(255, 0);
+    world.add(footSensor);
+
+    headSensor = new FBox(gridSize - 10, 10);
+    headSensor.setStaticBody(false);
+    headSensor.setSensor(true);
+    headSensor.setName("headSensor");
+    headSensor.setNoStroke();
+    headSensor.setFill(255, 0);
+    world.add(headSensor);
   }
 
   void act() {
     input();
     collisions();
     animate();
-    
-    if (isTouching("stone") || isTouching("ice") || isTouching("wall") || isTouching("bridge") || isTouching("spring") || isTouching("treeIntersect") || isTouching("treeMiddle") || isTouching("treeEndEast") || isTouching("treeEndWest")) {
+
+    footSensor.setPosition(player.getX(), player.getY() + 12);
+    footSensor.setVelocity(player.getVelocityX(), player.getVelocityY());
+
+    headSensor.setPosition(player.getX(), player.getY()-14);
+    headSensor.setVelocity(player.getVelocityX(), player.getVelocityY());
+
+    touchground = false;
+    if (itTouching(footSensor, "stone") || itTouching(footSensor, "ice") || itTouching(footSensor, "wall") || itTouching(footSensor, "bridge") || itTouching(footSensor, "spring") || itTouching(footSensor, "treetop")) {
       touchground = true;
-   }
+    }
   }
 
   void animate() {
@@ -61,8 +88,13 @@ class FPlayer extends FGameObject {
   }
 
   void collisions() {
-    if (isTouching("spike")) {
+    if (itTouching(footSensor, "spike")) {
+      lives--;
       setPosition (0, 0);
+    }
+    if (itTouching(footSensor, "lava")) {
+      lives--;
+      setPosition(0, 0);
     }
   }
 }

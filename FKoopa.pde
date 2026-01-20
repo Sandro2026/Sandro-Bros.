@@ -33,8 +33,13 @@ class FKoopa extends FGameObject {
     }
     if (isTouching("player")) {
       if (player.getY() < getY()-gridSize/2) {
+        FShell shell = new FShell(getX(), getY());
+        world.add(shell);
+        enemies.add(shell);
         world.remove(this);
         enemies.remove(this);
+        
+        
         player.setVelocity(player.getVelocityX(), -300);
       } else {
         player.lives--;
