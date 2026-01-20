@@ -29,7 +29,7 @@ class FGameObject extends FBox {
     ArrayList<FContact> cList = s.getContacts();
     for (FContact c : cList) {
       if (n.equals("floor")) {
-        if (c.contains("stone") || c.contains("ice") ||  c.contains("walls") || c.contains("bridge") || c.contains("treetop") || c.contains("spring")) {
+        if (c.contains("stone") || c.contains("ice") ||  c.contains("wall") || c.contains("bridge") || c.contains("treetop") || c.contains("spring")) {
           return true;
         }
       } else if (c.contains(n)) {

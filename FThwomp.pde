@@ -1,62 +1,61 @@
 class FThwomp extends FGameObject {
 
-  boolean activated = false;
-  boolean waiting = false;
-
+  int mode = 0; 
   float sensor = gridSize / 2;
   float startX, startY;
-
-  int waitStart;
+  float riseSpeed = -1;
+  float fallSpeed = 0; 
 
   FThwomp(float x, float y) {
     super(gridSize, thwomp[0].height);
     startX = x;
     startY = y;
-
     setPosition(x, y);
     setName("thwomp");
     setStatic(true);
     attachImage(thwomp[0]);
   }
-
   void act() {
     animate();
-    trigger();
-    reset();
-    collide();
+    updateMode();
+    collidePlayer();
   }
-
   void animate() {
-    if (activated) attachImage(thwomp[1]);
-    else attachImage(thwomp[0]);
+    if (mode == 1) attachImage(thwomp[1]); 
+    else attachImage(thwomp[0]);         
   }
-
-  void trigger() {
-    if (activated) return;
-
+  void updateMode() {
     float px = player.getX();
     float py = player.getY();
-
-    boolean under =
-      abs(px - getX()) < sensor &&
-      py > getY();
-
-    if (under) {
-      activated = true;
-      setStatic(false);
+    switch(mode) {
+      case 0:
+        boolean under = abs(px - getX()) < sensor && py > getY();
+        if (under) {
+          mode = 1;
+          setStatic(false);
+        }
+        break;
+      case 1:
+        if (touchingGround()) {
+          mode = 2;   
+          setStatic(true);
+        }
+        break;
+      case 2:
+        float newY = getY() + riseSpeed;
+        if (newY <= startY) {
+          newY = startY;
+          mode = 0;
+        }
+        setPosition(getX(), newY);
+        break;
     }
   }
-
-  void reset() {
-    if (player.getX() == 0 && player.getY() == 0 && activated) {
-      activated = false;
-      setStatic(true);
-      setVelocity(0, 0);
-      setPosition(startX, startY);
-    }
+  boolean touchingGround() {
+    return isTouching("stone") || isTouching("ice") || isTouching("wall") ||
+           isTouching("bridge") || isTouching("spring") || isTouching("treetop");
   }
-
-  void collide() {
+  void collidePlayer() {
     if (isTouching("player")) {
       player.lives--;
       player.setPosition(0, 0);

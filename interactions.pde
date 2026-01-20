@@ -1,7 +1,7 @@
 void mouseReleased() {
   if (mode == INTRO) {
     introClicks();
-  }else if (mode == GAME) {
+  } else if (mode == GAME) {
     gameClicks();
   } else if (mode == PAUSE) {
     pauseClicks();
@@ -21,11 +21,15 @@ void keyPressed() {
   if (key == 'D' || key == 'd') dkey = true;
   if (key == 'Q' || key == 'q') qkey = true;
   if (key == 'E' || key == 'e') ekey = true;
-  if (key == ' ') spacekey = true;
+  if (key == ' ' ) spacekey = true;
   if (keyCode == DOWN) downkey = true;
   if (keyCode == UP) upkey = true;
   if (keyCode == LEFT) leftkey = true;
-  if (keyCode == RIGHT) rightkey = true;  
+  if (keyCode == RIGHT) rightkey = true;
+  //if (key == ' ' && player.canShootIce && frameCount - player.lastIceShot >= player.iceCooldown) {
+  //  player.lastIceShot = frameCount;
+  //  spawnIceBall(player.getX(), player.getY(), player.direction);
+  //}
 }
 
 void keyReleased() {
@@ -39,5 +43,5 @@ void keyReleased() {
   if (keyCode == DOWN) downkey = false;
   if (keyCode == UP) downkey = false;
   if (keyCode == LEFT) downkey = false;
-  if (keyCode == RIGHT) downkey = false;  
+  if (keyCode == RIGHT) downkey = false;
 }

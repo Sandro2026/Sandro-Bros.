@@ -31,10 +31,12 @@ color magenta  = color(204, 0, 184);
 color aqua = color(47, 255, 234);
 color midnight = color(0, 2, 61);
 color lavender = color(255, 155, 222);
+color beige = color(142, 64, 58);
+color mush = color(142, 130, 92);
 
 
 PImage wall, map, ice, stone, treeTrunk, spring, spike, treeIntersect, treeMiddle, treeEndEast, treeEndWest, bridge, nightsky, shell, luckyB;
-
+PImage pwrUp, iceCube, plasmaBall, pwrUpPlasma, mushroom;
 PImage[] idle;
 PImage[] jump;
 PImage[] run;
@@ -54,6 +56,7 @@ boolean upkey, downkey, leftkey, rightkey, wkey, akey, skey, spacekey, dkey, qke
 FPlayer player;
 ArrayList<FGameObject> terrain;
 ArrayList<FGameObject> enemies;
+ArrayList<FGameObject> powerUps;
 
 void setup() {
   size(600, 600);
@@ -63,12 +66,24 @@ void setup() {
 
   terrain = new ArrayList<FGameObject>();
   enemies = new ArrayList<FGameObject>();
+  powerUps = new ArrayList<FGameObject>();
   loadImages();
   loadWorld(map);
   loadPlayer();
 }
 void loadImages() {
+  mushroom = loadImage("mushroom.png");
+  mushroom.resize(32, 32);
+  plasmaBall = loadImage("plasmaBall.png");
+  plasmaBall.resize(32, 32);
+  pwrUpPlasma = loadImage("pwrUpPlasma.jpg");
+  pwrUpPlasma.resize(32, 32);
+  iceCube = loadImage("icube.png");
+  iceCube.resize(32, 32);
+  pwrUp = loadImage("pwrUp.png");
+  pwrUp.resize(32, 32);
   luckyB = loadImage("luckyB.png");
+  luckyB.resize(32, 32);
   map = loadImage("map.png");
   ice = loadImage("blueBlock.png");
   treeTrunk = loadImage("tree_trunk.png");
@@ -135,8 +150,8 @@ void loadImages() {
   koopa[0].resize(gridSize, gridSize);
   koopa[1] = loadImage("koopa1.png");
   koopa[1].resize(gridSize, gridSize);
-  
-  
+
+
   shell = loadImage("shell.jpg");
   shell.resize(gridSize, gridSize);
 }
@@ -224,10 +239,31 @@ void loadWorld(PImage img) {
         FKoopa kpa = new FKoopa(x*gridSize, y*gridSize);
         enemies.add(kpa);
         world.add(kpa);
+      } else if ( c == beige) {
+        FLuckyBlock Lky = new FLuckyBlock(x*gridSize, y*gridSize);
+        terrain.add(Lky);
+        world.add(Lky);
+      } else if ( c == mush) {
+        FMushroom mush = new FMushroom(x*gridSize, y*gridSize);
+        world.add(mush);
+        powerUps.add(mush);
       }
     }
   }
 }
+
+void spawnIceBall(float x, float y, int dir) {
+  FIceBall iceCube = new FIceBall(x, y, dir);
+  world.add(iceCube);
+  powerUps.add(iceCube);
+}
+
+void spawnPlasmaBall(float x, float y, int dir) {
+  FPlasmaBall plasmaBall = new FPlasmaBall(x, y, dir);
+  world.add(plasmaBall);
+  powerUps.add(plasmaBall);
+}
+
 
 void loadPlayer() {
   player = new FPlayer();
@@ -259,6 +295,10 @@ void actWorld () {
   for (int i = 0; i < enemies.size(); i++) {
     FGameObject e = enemies.get(i);
     e.act();
+  }
+  for (int i = 0; i < powerUps.size(); i++) {
+    FGameObject p = powerUps.get(i);
+    p.act();
   }
 }
 

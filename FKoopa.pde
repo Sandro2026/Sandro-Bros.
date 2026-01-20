@@ -4,8 +4,8 @@ class FKoopa extends FGameObject {
   int speed = 50;
   int frame = 0;
 
-boolean inShell = false;
-boolean shellMoving = false;
+  boolean inShell = false;
+  boolean shellMoving = false;
 
 
   FKoopa(float x, float y) {
@@ -22,6 +22,7 @@ boolean shellMoving = false;
   }
 
   void animate() {
+    if (inShell) return;
     if (frame >= koopa.length) frame = 0;
     if (frameCount % 5 == 0) {
       if (direction == R) attachImage(koopa[frame]);
@@ -30,58 +31,49 @@ boolean shellMoving = false;
     }
   }
 
-void collide() {
-
-
-  if (isTouching("player")) {
-
- 
-    if (itTouching(player.footSensor, "koopa")) {
-
-      if (!inShell) {
-        inShell = true;
-        shellMoving = false;
-        speed = 0;
-        attachImage(shell);
-        player.setVelocity(player.getVelocityX(), -300);
-        return;
+  void collide() {
+    if (isTouching("wall")) {
+      direction *= -1;
+      setPosition(getX()+direction, getY());
+    }
+    if (shellMoving && isTouching("player")) {
+      player.lives--;
+      player.setPosition(0, 0);
+      return;
+    }
+    if (isTouching("player")) {
+      if (itTouching(player.footSensor, "koopa")) {
+        if (!inShell) {
+          inShell = true;
+          shellMoving = false;
+          speed = 0;
+          attachImage(shell);
+          player.setVelocity(player.getVelocityX(), -300);
+          return;
+        }
+        if (inShell && !shellMoving) {
+          world.remove(this);
+          enemies.remove(this);
+          player.setVelocity(player.getVelocityX(), -300);
+          return;
+        }
       }
-
- 
       if (inShell && !shellMoving) {
-        world.remove(this);
-        enemies.remove(this);
-        player.setVelocity(player.getVelocityX(), -300);
+        shellMoving = true;
+        direction = (player.getX() < getX()) ? R : L;
+        speed = 300;
         return;
       }
+      if (!inShell) {
+        player.lives--;
+        player.setPosition(0, 0);
+      }
     }
-
-    if (inShell && !shellMoving) {
-      shellMoving = true;
-      direction = (player.getX() < getX()) ? R : L;
-      speed = 300;
-      return;
-    }
-
-   
-    if (shellMoving) {
-      player.lives--;
-      player.setPosition(0, 0);
-      return;
-    }
-
-
-    if (!inShell) {
-      player.lives--;
-      player.setPosition(0, 0);
+    if (shellMoving && isTouching("wall")) {
+      direction *= -1;
     }
   }
 
-
-  if (shellMoving && isTouching("wall")) {
-    direction *= -1;
-  }
-}
 
 
   void move() {
