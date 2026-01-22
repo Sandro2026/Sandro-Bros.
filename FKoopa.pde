@@ -3,10 +3,8 @@ class FKoopa extends FGameObject {
   int direction = L;
   int speed = 50;
   int frame = 0;
-
   boolean inShell = false;
   boolean shellMoving = false;
-
 
   FKoopa(float x, float y) {
     super();
@@ -34,12 +32,20 @@ class FKoopa extends FGameObject {
   void collide() {
     if (isTouching("wall")) {
       direction *= -1;
-      setPosition(getX()+direction, getY());
+      setPosition(getX() + direction, getY());
     }
-    if (shellMoving && isTouching("player")) {
-      player.lives--;
-      player.setPosition(0, 0);
-      return;
+
+    if (shellMoving) {
+      if (itTouching(player.footSensor, "koopa")) {
+        world.remove(this);
+        enemies.remove(this);
+        player.setVelocity(player.getVelocityX(), -300);
+        return;
+      } else if (isTouching("player")) {
+        player.lives--;
+        player.setPosition(0, 0);
+        return;
+      }
     }
     if (isTouching("player")) {
       if (itTouching(player.footSensor, "koopa")) {
@@ -66,15 +72,13 @@ class FKoopa extends FGameObject {
       }
       if (!inShell) {
         player.lives--;
-        player.setPosition(0, 0);
+        player.setPosition(player.spawnX, player.spawnY);
       }
     }
     if (shellMoving && isTouching("wall")) {
       direction *= -1;
     }
   }
-
-
 
   void move() {
     float vy = getVelocityY();

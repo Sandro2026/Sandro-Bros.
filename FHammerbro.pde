@@ -3,7 +3,6 @@ class FHammerbro extends FGameObject {
   int direction = L;
   int speed = 50;
   int frame = 0;
-
   int throwCooldown  = 120;
   int lastThrow = 0;
 
@@ -23,7 +22,7 @@ class FHammerbro extends FGameObject {
 
   void animate() {
     if (frame >= hammerbro.length) frame = 0;
-    if (frameCount % 5 == 0) {
+    if (frameCount%5 == 0) {
       if (direction == R) attachImage(hammerbro[frame]);
       if (direction == L) attachImage(reverseImage(hammerbro[frame]));
       frame++;
@@ -42,7 +41,7 @@ class FHammerbro extends FGameObject {
         player.setVelocity(player.getVelocityX(), -300);
       } else {
         player.lives--;
-        player.setPosition(0, 0);
+        player.setPosition(player.spawnX, player.spawnY);
       }
     }
   }
@@ -58,7 +57,7 @@ class FHammerbro extends FGameObject {
     lastThrow = frameCount;
 
     float hammerX = getX();
-    float hammerY = getY() + gridSize/2;
+    float hammerY = getY()+gridSize/2;
 
     FHammer h = new FHammer(hammerX, hammerY, direction);
     world.add(h);

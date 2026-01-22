@@ -26,10 +26,6 @@ void keyPressed() {
   if (keyCode == UP) upkey = true;
   if (keyCode == LEFT) leftkey = true;
   if (keyCode == RIGHT) rightkey = true;
-  //if (key == ' ' && player.canShootIce && frameCount - player.lastIceShot >= player.iceCooldown) {
-  //  player.lastIceShot = frameCount;
-  //  spawnIceBall(player.getX(), player.getY(), player.direction);
-  //}
 }
 
 void keyReleased() {

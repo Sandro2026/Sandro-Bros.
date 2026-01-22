@@ -1,6 +1,6 @@
 class FShell extends FGameObject {
 
-  int direction = 0; 
+  int direction = 0;
   int speed = 300;
   boolean isMoving = false;
 
@@ -10,8 +10,6 @@ class FShell extends FGameObject {
     setName("shell");
     setRotatable(false);
     attachImage(shell);
-    
-    //setStatic(false);
     setFriction(0);
     setRestitution(0);
   }
@@ -34,25 +32,27 @@ class FShell extends FGameObject {
       if (isMoving) direction *= -1;
     }
 
-    if (isTouching("player")) {
-      float px = player.getX();
-      float pyBottom = player.getY() + gridSize/2;
-      float shellTop = getY() - gridSize/2;
-
-      if (pyBottom < shellTop + 5) {
-        if (!isMoving) {
-          direction = (px < getX()) ? 1 : -1;
-          isMoving = true;
+    if (isTouching("goomba") || isTouching("koopa") || isTouching("hammerbro")) {
+      for (int i = enemies.size()-1; i >= 0; i--) {
+        FGameObject e = enemies.get(i);
+        if (isTouching(e.getName())) {
+          world.remove(e);
+          world.remove(e);
         }
-        player.setVelocity(player.getVelocityX(), -300);
-      }
-      else {
-        if (isMoving) {
-          player.lives--;
-          player.setPosition(0, 0);
-        } else {
-          direction = (px < getX()) ? 1 : -1;
-          isMoving = true;
+
+        if (isTouching("player")) {
+          if (itTouching(player.footSensor, "shell")) {
+            world.remove(this);
+            enemies.remove(this);
+            player.setVelocity(player.getVelocityX(), -300);
+            return;
+          } else if (isMoving) {
+            player.lives--;
+            player.setPosition(0, 0);
+          } else {
+            direction = (player.getX() < getX()) ? 1: -1;
+            isMoving = true;
+          }
         }
       }
     }

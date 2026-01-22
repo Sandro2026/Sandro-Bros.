@@ -4,25 +4,18 @@ class FMushroom extends FGameObject {
   float speed = 80;
 
   FMushroom(float x, float y) {
-    super(gridSize, gridSize);
+    super();
     setPosition(x, y);
     setName("mushroom");
     attachImage(mushroom);
-    setSensor(false);
-    setRestitution(0);
   }
 
   void act() {
-    setVelocity(speed * direction, getVelocityY());
+    setVelocity(speed*direction, getVelocityY());
 
     if (isTouching("wall")) {
       direction *= -1;
-      setVelocity(speed * direction, getVelocityY());
-    }
-    
-    if (getY() > height + 100) {
-      world.remove(this);
-      powerUps.remove(this);
+      setVelocity(speed*direction, getVelocityY());
     }
   }
 }

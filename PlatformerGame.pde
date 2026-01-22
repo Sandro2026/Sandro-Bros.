@@ -1,3 +1,5 @@
+import gifAnimation.*;
+
 import processing.sound.*;
 
 import fisica.*;
@@ -14,6 +16,8 @@ final int GAMEWIN = 3;
 final int GAMEOVER = 4;
 
 int mode;
+
+
 
 color white  = #FFFFFF;
 color black  = #000000;
@@ -33,10 +37,20 @@ color midnight = color(0, 2, 61);
 color lavender = color(255, 155, 222);
 color beige = color(142, 64, 58);
 color mush = color(142, 130, 92);
+color port = color(52, 255, 165);
+color portE = color(187, 255, 0);
+color lilB = color(121, 152, 0);
+color dirtColor = color(129, 86, 0);
+color dblue = color(22, 165, 219);
+color flag = color(118, 117, 116);
+
+FPortal prtlI;
+FPortalE prtlE;
 
 
-PImage wall, map, ice, stone, treeTrunk, spring, spike, treeIntersect, treeMiddle, treeEndEast, treeEndWest, bridge, nightsky, shell, luckyB;
-PImage pwrUp, iceCube, plasmaBall, pwrUpPlasma, mushroom;
+
+PImage flagTop, flagUnderTop, flagCenter, flagBottom, wall, map, ice, stone, treeTrunk, portal, portalExit, spring, spike, treeIntersect, treeMiddle, treeEndEast, treeEndWest, bridge, nightsky, shell, luckyB, savePB;
+PImage dirt_center, dirt_n, dirt_e, dirt_s, dirt_w, dirt_ne, dirt_nw, dirt_se, dirt_sw, pwrUp, iceCube, plasmaBall, pwrUpPlasma, mushroom;
 PImage[] idle;
 PImage[] jump;
 PImage[] run;
@@ -48,6 +62,7 @@ PImage[] lava;
 PImage[] thwomp;
 PImage[] hammerbro;
 PImage[] hammer;
+PImage[] water;
 
 
 int gridSize = 32;
@@ -57,6 +72,8 @@ FPlayer player;
 ArrayList<FGameObject> terrain;
 ArrayList<FGameObject> enemies;
 ArrayList<FGameObject> powerUps;
+
+Gif IntroGif, GameWinGif, GameOverGif;
 
 void setup() {
   size(600, 600);
@@ -70,13 +87,45 @@ void setup() {
   loadImages();
   loadWorld(map);
   loadPlayer();
+
+
+   IntroGif = new Gif(this, "IntroGif.gif");
+   IntroGif.loop();
+   
+   GameWinGif = new Gif(this, "GameWinGif.gif");
+   GameWinGif.loop();
+   
+   GameOverGif = new Gif(this, "GameOverGif.gif");
+   GameOverGif.loop();
+   
 }
 void loadImages() {
+  flagTop = loadImage("flagTop.png");
+  flagTop.resize(32, 32);
+  flagUnderTop = loadImage("flagUnderTop.png");
+  flagUnderTop.resize(32, 32);
+  flagCenter = loadImage("flagCenter.png");  
+  flagCenter.resize(32, 32);
+  flagBottom = loadImage("flagBottom.png");  
+  flagBottom.resize(32, 32);
+  dirt_center = loadImage("dirt_center.png");
+  dirt_n = loadImage("dirt_n.png");
+  dirt_ne = loadImage("dirt_ne.png");
+  dirt_nw = loadImage("dirt_nw.png");
+  dirt_s = loadImage("dirt_s.png");
+  dirt_se = loadImage("dirt_se.png");
+  dirt_sw = loadImage("dirt_sw.png");
+  dirt_e = loadImage("dirt_e.png");
+  dirt_w = loadImage("dirt_w.png");
+
+  savePB = loadImage("LilBuddy.png");
+  portal = loadImage("portal.png");
+  portalExit = loadImage("portalExit.png");
   mushroom = loadImage("mushroom.png");
   mushroom.resize(32, 32);
   plasmaBall = loadImage("plasmaBall.png");
   plasmaBall.resize(32, 32);
-  pwrUpPlasma = loadImage("pwrUpPlasma.jpg");
+  pwrUpPlasma = loadImage("pwrUpPlasma.png");
   pwrUpPlasma.resize(32, 32);
   iceCube = loadImage("icube.png");
   iceCube.resize(32, 32);
@@ -89,12 +138,13 @@ void loadImages() {
   treeTrunk = loadImage("tree_trunk.png");
   ice.resize(32, 32);
   stone = loadImage("brick.png");
-  spring = loadImage("spring.png");
+  spring = loadImage("spring2.png");
   spike = loadImage("spike.png");
   treeIntersect = loadImage("tree_intersect.png");
   treeMiddle = loadImage("treetop_center.png");
   treeEndEast = loadImage("treetop_e.png");
   treeEndWest = loadImage("treetop_w.png");
+
   bridge = loadImage("bridge_center.png");
   wall = loadImage("wall.png");
   wall.resize(32, 32);
@@ -134,6 +184,17 @@ void loadImages() {
   lava[5] = loadImage("lava5.png");
   lava[5].resize(gridSize, gridSize);
 
+  water = new PImage[4];
+  water[0] = loadImage("water1.png");
+  water[0].resize(gridSize, gridSize);
+  water[1] = loadImage("water3.png");
+  water[1].resize(gridSize, gridSize);
+  water[2] = loadImage("water3.png");
+  water[2].resize(gridSize, gridSize);
+  water[3] = loadImage("water4.png");
+  water[3].resize(gridSize, gridSize);
+
+
   thwomp = new PImage[2];
   thwomp[0] = loadImage("thwomp0.png");
   thwomp[1] = loadImage("thwomp1.png");
@@ -152,8 +213,8 @@ void loadImages() {
   koopa[1].resize(gridSize, gridSize);
 
 
-  shell = loadImage("shell.jpg");
-  shell.resize(gridSize, gridSize);
+  shell = loadImage("shell.png");
+  shell.resize(32, 32);
 }
 
 void loadWorld(PImage img) {
@@ -166,6 +227,7 @@ void loadWorld(PImage img) {
       color s = img.get(x, y+1); //color below current pixel
       color w = img.get(x-1, y); //color west of current pixel
       color e = img.get(x+1, y); //color east of current pixel
+      color n = img.get(x, y-1); //color north of current pixel
       FBox b = new FBox(gridSize, gridSize);
       b.setPosition(x*gridSize, y*gridSize);
       b.setStatic(true);
@@ -200,6 +262,26 @@ void loadWorld(PImage img) {
         b.attachImage(treeEndEast);
         b.setName("treetop");
         world.add(b);
+      } else if (c == flag && n != flag) {
+        b.attachImage(flagTop);
+        b.setSensor(true);
+        b.setName("flagPole");
+        world.add(b);
+      } else if (c == flag && n == flag && img.get(x, y-2) != flag) {
+        b.attachImage(flagUnderTop);
+        b.setSensor(true);
+        b.setName("flagPole");
+        world.add(b);
+      } else if (c == flag && n == flag && s == flag) {
+        b.attachImage(flagCenter);
+        b.setSensor(true);
+        b.setName("flagPole");
+        world.add(b);
+      } else if (c == flag && s != flag) {
+        b.attachImage(flagBottom);
+        b.setSensor(true);
+        b.setName("flagPole");
+        world.add(b);
       } else if (c == brown) {
         b.attachImage(treeTrunk);
         b.setSensor(true);
@@ -212,7 +294,6 @@ void loadWorld(PImage img) {
         world.add(b);
       } else if (c == purple) {
         b.attachImage(spike);
-        b.setRestitution(2);
         b.setName("spike");
         world.add(b);
       } else if (c == pink) {
@@ -227,6 +308,11 @@ void loadWorld(PImage img) {
         FLava lva = new FLava(x*gridSize, y*gridSize);
         terrain.add(lva);
         world.add(lva);
+      } else if (c == dblue) {
+        FWater wtr = new FWater(x*gridSize, y*gridSize);
+        wtr.setSensor(true);
+        terrain.add(wtr);
+        world.add(wtr);
       } else if ( c == aqua) {
         FThwomp thmp = new FThwomp(x*gridSize, y*gridSize);
         enemies.add(thmp);
@@ -245,8 +331,56 @@ void loadWorld(PImage img) {
         world.add(Lky);
       } else if ( c == mush) {
         FMushroom mush = new FMushroom(x*gridSize, y*gridSize);
-        world.add(mush);
         powerUps.add(mush);
+        world.add(mush);
+      } else if ( c == port) {
+        prtlI = new FPortal(x*gridSize, y*gridSize);
+        terrain.add(prtlI);
+        prtlI.attachImage(portal);
+        prtlI.setFriction(5);
+        prtlI.setName("FPortals");
+        world.add(prtlI);
+      } else if (c == portE) {
+        prtlE = new FPortalE(x*gridSize, y*gridSize);
+        terrain.add(prtlE);
+        prtlE.attachImage(portalExit);
+        prtlE.setFriction(6);
+        prtlE.setName("FPortalE");
+        world.add(prtlE);
+      } else if (c == lilB) {
+        FCheckpoint cp = new FCheckpoint(x*gridSize, y*gridSize);
+        terrain.add(cp);
+        world.add(cp);
+      } else if (c == dirtColor && n != dirtColor && w != dirtColor) {
+        b.attachImage(dirt_nw);
+        b.setFriction(4);
+        b.setName("dirt");
+        world.add(b);
+      } else if (c == dirtColor && n != dirtColor && e != dirtColor) {
+        b.attachImage(dirt_ne);
+        b.setFriction(4);
+        b.setName("dirt");
+        world.add(b);
+      } else if (c == dirtColor && n != dirtColor) {
+        b.attachImage(dirt_n);
+        b.setFriction(4);
+        b.setName("dirt");
+        world.add(b);
+      } else if (c == dirtColor && w == dirtColor && e == dirtColor) {
+        b.attachImage(dirt_center);
+        b.setFriction(4);
+        b.setName("dirt");
+        world.add(b);
+      } else if (c == dirtColor && w != dirtColor) {
+        b.attachImage(dirt_w);
+        b.setFriction(4);
+        b.setName("dirt");
+        world.add(b);
+      } else if (c == dirtColor && e != dirtColor) {
+        b.attachImage(dirt_e);
+        b.setFriction(4);
+        b.setName("dirt");
+        world.add(b);
       }
     }
   }
@@ -257,14 +391,11 @@ void spawnIceBall(float x, float y, int dir) {
   world.add(iceCube);
   powerUps.add(iceCube);
 }
-
 void spawnPlasmaBall(float x, float y, int dir) {
   FPlasmaBall plasmaBall = new FPlasmaBall(x, y, dir);
   world.add(plasmaBall);
   powerUps.add(plasmaBall);
 }
-
-
 void loadPlayer() {
   player = new FPlayer();
   world.add(player);

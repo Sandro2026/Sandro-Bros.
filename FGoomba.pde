@@ -29,22 +29,22 @@ class FGoomba extends FGameObject {
   void collide() {
     if (isTouching("wall")) {
       direction *= -1;
-      setPosition(getX()+direction, getY());
+      setPosition(getX() + direction, getY());
     }
     if (isTouching("player")) {
-      if (player.getY() < getY()-gridSize/2) {
+      if (player.getY() < getY() - gridSize / 2) {
         world.remove(this);
         enemies.remove(this);
         player.setVelocity(player.getVelocityX(), -300);
       } else {
         player.lives--;
-        player.setPosition(0, 0);
+        player.setPosition(player.spawnX, player.spawnY);
       }
     }
   }
 
   void move() {
     float vy = getVelocityY();
-    setVelocity(speed*direction, vy);
+    setVelocity(speed * direction, vy);
   }
 }

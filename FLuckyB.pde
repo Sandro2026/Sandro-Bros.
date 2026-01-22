@@ -23,13 +23,11 @@ class FLuckyBlock extends FGameObject {
 
   void spawnPowerUp() {
     if (random(1) < 0.5) {
-      // Thus is for my ice power up I need to remeber
-      FPowerUp ice = new FPowerUp(getX(), getY() - gridSize);
+      FPowerUp ice = new FPowerUp(getX(), getY()-gridSize);
       world.add(ice);
       powerUps.add(ice);
     } else {
-      // plasma
-      FPlasmaPower plasma = new FPlasmaPower(getX(), getY() - gridSize);
+      FPlasmaPower plasma = new FPlasmaPower(getX(), getY()-gridSize);
       world.add(plasma);
       powerUps.add(plasma);
     }

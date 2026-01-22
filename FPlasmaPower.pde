@@ -1,5 +1,4 @@
 class FPlasmaPower extends FGameObject {
-
   FPlasmaPower(float x, float y) {
     super(gridSize, gridSize);
     setPosition(x, y);

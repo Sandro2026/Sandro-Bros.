@@ -1,13 +1,14 @@
-class FLava extends FGameObject {
+class FWater extends FGameObject {
 
   int frame = 0;
+  int playerSpeed = 30;
   int delay;
   int lastUpdateTime;
   
-  FLava(float x, float y) {
+  FWater(float x, float y) {
     super();
     setPosition(x, y);
-    setName("lava");
+    setName("water");
     setStatic(true);
     
     delay = int(random(20, 60));
@@ -19,9 +20,9 @@ class FLava extends FGameObject {
   }
 
   void animate() {
-    if (frameCount-lastUpdateTime >= delay) {
-      attachImage(lava[frame]);
-      frame = (frame+1)%lava.length;
+    if (frameCount - lastUpdateTime >= delay) {
+      attachImage(water[frame]);
+      frame = (frame+1) % water.length;
       lastUpdateTime = frameCount;
     }
   }
